@@ -32,12 +32,12 @@ database:
 jwt:
   secret: "your-super-secret-jwt-key-change-in-production"
 
-# SMTP Configuration (for email verification)
-smtp:
-  host: "smtp.gmail.com"
-  port: 587
-  username: "your-email@gmail.com"
-  password: "your-app-password"
+# Mailgun Configuration (for email verification)
+mailgun:
+  domain: "yourdomain.mailgun.org"
+  api_key: "your-mailgun-api-key"
+  from_email: "noreply@yourdomain.com"
+  from_name: "ErgRacer Team"
 
 # Application Configuration
 app:

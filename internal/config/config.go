@@ -10,7 +10,7 @@ import (
 type Config struct {
 	Database DatabaseConfig `yaml:"database"`
 	JWT      JWTConfig      `yaml:"jwt"`
-	SMTP     SMTPConfig     `yaml:"smtp"`
+	Mailgun  MailgunConfig  `yaml:"mailgun"`
 	App      AppConfig      `yaml:"app"`
 }
 
@@ -22,11 +22,11 @@ type JWTConfig struct {
 	Secret string `yaml:"secret"`
 }
 
-type SMTPConfig struct {
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
+type MailgunConfig struct {
+	Domain    string `yaml:"domain"`
+	APIKey    string `yaml:"api_key"`
+	FromEmail string `yaml:"from_email"`
+	FromName  string `yaml:"from_name"`
 }
 
 type AppConfig struct {
@@ -43,20 +43,20 @@ func (c *Config) JWTSecret() string {
 	return c.JWT.Secret
 }
 
-func (c *Config) SMTPHost() string {
-	return c.SMTP.Host
+func (c *Config) MailgunDomain() string {
+	return c.Mailgun.Domain
 }
 
-func (c *Config) SMTPPort() string {
-	return fmt.Sprintf("%d", c.SMTP.Port)
+func (c *Config) MailgunAPIKey() string {
+	return c.Mailgun.APIKey
 }
 
-func (c *Config) SMTPUsername() string {
-	return c.SMTP.Username
+func (c *Config) MailgunFromEmail() string {
+	return c.Mailgun.FromEmail
 }
 
-func (c *Config) SMTPPassword() string {
-	return c.SMTP.Password
+func (c *Config) MailgunFromName() string {
+	return c.Mailgun.FromName
 }
 
 func (c *Config) AppURL() string {

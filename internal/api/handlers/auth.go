@@ -64,10 +64,10 @@ func (h *AuthHandler) Register(c *gin.Context) {
 			user.Email,
 			*user.EmailVerifyToken,
 			h.config.AppURL(),
-			h.config.SMTPHost(),
-			h.config.SMTPPort(),
-			h.config.SMTPUsername(),
-			h.config.SMTPPassword(),
+			h.config.MailgunDomain(),
+			h.config.MailgunAPIKey(),
+			h.config.MailgunFromEmail(),
+			h.config.MailgunFromName(),
 		)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
