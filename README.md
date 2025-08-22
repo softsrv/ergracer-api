@@ -1,4 +1,4 @@
-# ErgrAcer API
+# ErgRacer API
 
 A rowing race application API built with Go and PostgreSQL that allows users to compete against each other using Concept2 rowing machines.
 
@@ -10,14 +10,6 @@ A rowing race application API built with Go and PostgreSQL that allows users to 
 - **Real-time Racing**: Track progress and race completion
 - **Race History**: View past races and statistics
 - **JWT Authentication**: Secure API access
-
-## Architecture
-
-- **Backend**: Go 1.24 with Gin framework
-- **Database**: PostgreSQL 17 with pgx driver
-- **Authentication**: JWT Bearer tokens
-- **Email**: SMTP-based verification
-- **Containerization**: Docker with security hardening
 
 ## Quick Start
 
