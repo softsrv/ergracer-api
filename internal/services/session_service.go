@@ -22,14 +22,17 @@ func (s *SessionService) CreateSession(userID int, deviceType, userAgent, ipAddr
 		return "", err
 	}
 
-	refreshTokenHash := utils.HashRefreshToken(refreshToken)
+	refreshTokenHash, err := utils.HashRefreshToken(refreshToken)
+	if err != nil {
+		return "", err
+	}
 	expiresAt := time.Now().Add(7 * 24 * time.Hour) // 7 days
 
 	query := `
 		INSERT INTO sessions (user_id, refresh_token_hash, device_type, user_agent, ip_address, expires_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
 	`
-	
+
 	_, err = s.db.Exec(query, userID, refreshTokenHash, deviceType, userAgent, ipAddress, expiresAt)
 	if err != nil {
 		return "", err
@@ -39,16 +42,19 @@ func (s *SessionService) CreateSession(userID int, deviceType, userAgent, ipAddr
 }
 
 func (s *SessionService) ValidateRefreshToken(refreshToken string) (*models.Session, error) {
-	refreshTokenHash := utils.HashRefreshToken(refreshToken)
-	
+	refreshTokenHash, err := utils.HashRefreshToken(refreshToken)
+	if err != nil {
+		return nil, err
+	}
+
 	query := `
 		SELECT id, user_id, refresh_token_hash, device_type, user_agent, ip_address, expires_at, created_at, updated_at
-		FROM sessions 
+		FROM sessions
 		WHERE refresh_token_hash = $1 AND expires_at > NOW()
 	`
-	
+
 	var session models.Session
-	err := s.db.QueryRow(query, refreshTokenHash).Scan(
+	err = s.db.QueryRow(query, refreshTokenHash).Scan(
 		&session.ID,
 		&session.UserID,
 		&session.RefreshTokenHash,
@@ -59,25 +65,28 @@ func (s *SessionService) ValidateRefreshToken(refreshToken string) (*models.Sess
 		&session.CreatedAt,
 		&session.UpdatedAt,
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &session, nil
 }
 
 func (s *SessionService) UpdateSession(sessionID int, newRefreshToken string) error {
-	refreshTokenHash := utils.HashRefreshToken(newRefreshToken)
+	refreshTokenHash, err := utils.HashRefreshToken(newRefreshToken)
+	if err != nil {
+		return err
+	}
 	expiresAt := time.Now().Add(7 * 24 * time.Hour) // 7 days
-	
+
 	query := `
-		UPDATE sessions 
+		UPDATE sessions
 		SET refresh_token_hash = $1, expires_at = $2, updated_at = CURRENT_TIMESTAMP
 		WHERE id = $3
 	`
-	
-	_, err := s.db.Exec(query, refreshTokenHash, expiresAt, sessionID)
+
+	_, err = s.db.Exec(query, refreshTokenHash, expiresAt, sessionID)
 	return err
 }
 
@@ -88,10 +97,13 @@ func (s *SessionService) DeleteExpiredSessions() error {
 }
 
 func (s *SessionService) DeleteSession(refreshToken string) error {
-	refreshTokenHash := utils.HashRefreshToken(refreshToken)
-	
+	refreshTokenHash, err := utils.HashRefreshToken(refreshToken)
+	if err != nil {
+		return err
+	}
+
 	query := `DELETE FROM sessions WHERE refresh_token_hash = $1`
-	_, err := s.db.Exec(query, refreshTokenHash)
+	_, err = s.db.Exec(query, refreshTokenHash)
 	return err
 }
 

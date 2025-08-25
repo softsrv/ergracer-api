@@ -2,12 +2,12 @@ package utils
 
 import (
 	"crypto/rand"
-	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Claims struct {
@@ -43,6 +43,10 @@ func ValidateJWT(tokenString, secret string) (int, error) {
 		return 0, errors.New("invalid token")
 	}
 
+	if token.Method != jwt.SigningMethodHS256 {
+		return 0, errors.New("incorrect signing method")
+	}
+
 	return claims.UserID, nil
 }
 
@@ -54,7 +58,8 @@ func GenerateRefreshToken() (string, error) {
 	return hex.EncodeToString(bytes), nil
 }
 
-func HashRefreshToken(token string) string {
-	hash := sha256.Sum256([]byte(token))
-	return hex.EncodeToString(hash[:])
+func HashRefreshToken(token string) (string, error) {
+
+	bytes, err := bcrypt.GenerateFromPassword([]byte(token), bcrypt.DefaultCost)
+	return string(bytes), err
 }
